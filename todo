@@ -1,0 +1,32 @@
+[] - make sidebar and second sidebar dynamic
+[] - get passkey auth working as expected
+[] - evaluate whether I should actually use clerk or not
+    - Benefits of clerk (user management/roles/etc)
+    - clerk would be an easier setup unfortunately
+
+[] - add remaining schemas to prisma schema
+[] - seed database with some posts
+[] - for secondary sidebar, use replace the ListItem component with the shad implementation, maybe
+
+REALTIME
+
+[] - add profiles
+[] - add ability to upload music and store in s3
+
+WRITING
+
+[] - making sure that writing posts, as markdown, can store images and get them back to preview in the ui
+
+STYLES
+
+[] - add brianlovin styles to app styles
+
+REARCHITECT
+
+[] - setup clean architecture
+
+EMAIL SUBSCRIPTION
+
+[] - email subscription should probably be done through resend
+[] - maybe convertkit
+[] - see if it is possible to send liquid templates and use the palladio.dev

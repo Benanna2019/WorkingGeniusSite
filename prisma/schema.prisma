@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+
+  runtime                = "workerd"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+
+  output          = "../generated/prisma"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid()) // User ID (UUID-based)
+  createdAt DateTime @default(now())
+
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  updatedAt     DateTime
+  
+
+  // Used for the admin plugin
+  role       Role @default(USER)
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+  comments     Comment[]
+  questions    Question[]
+  reactions    Reaction[]
+  posts        Post[]
+  sessions      Session[]
+  accounts      Account[]
+
+  credentials Credential[] // Relationship: One user can have many credentials
+}
+
+model Credential {
+  id           String   @id @default(uuid()) // Internal DB ID
+  userId       String   @unique // Every credential is linked to a specific user
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  credentialId String   @unique // WebAuthn credential identifier
+  publicKey    Bytes
+  counter      Int      @default(0)
+
+  @@index([credentialId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+enum Role {
+  BLOCKED
+  USER
+  ADMIN
+}
+
+model Bookmark {
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  url           String     @unique 
+  host          String?
+  title         String?    
+  image         String?    
+  description   String?    
+  twitterHandle String?
+  faviconUrl    String?
+  comments      Comment[]
+  reactions     Reaction[]
+  tags          Tag[]
+
+  @@index([host])
+}
+
+model Question {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  author      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String     
+  description String?    
+  userId      String
+  comments    Comment[]
+  reactions   Reaction[]
+}
+
+model Comment {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  text       String     
+  audio      Audio?
+  reactions  Reaction[]
+  author     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  bookmark   Bookmark?  @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  question   Question?  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  post       Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  bookmarkId String?
+  questionId String?
+  postId     String?
+
+  @@index([bookmarkId])
+  @@index([questionId])
+  @@index([postId])
+}
+
+model Audio {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  plays         Int
+  waveform      Json
+  url           String
+  transcription String
+  comment       Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId     String   @unique
+}
+
+model Post {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  publishedAt  DateTime?
+  author       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug         String     @unique
+  title        String     
+  text         String     
+  excerpt      String     
+  featureImage String?
+  comments     Comment[]
+  reactions    Reaction[]
+  history      PostEdit[]
+  userId       String
+
+  @@index([publishedAt])
+}
+
+model PostEdit {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  text         String   
+  title        String   
+  excerpt      String   
+  featureImage String?
+  post         Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       String?
+
+  @@index([postId])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  bookmarks Bookmark[]
+}
+
+
+model Reaction {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  bookmark   Bookmark? @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  comment    Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post       Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId  String?
+  bookmarkId String?
+  questionId String?
+  postId     String?
+
+  @@index([commentId])
+  @@index([bookmarkId])
+  @@index([questionId])
+  @@index([postId])
+}
+
