@@ -1,3 +1,4 @@
+"use client";
 import * as React from 'react'
 
 import { ListContainer } from '@/app/components/ListDetail/ListContainer'
@@ -6,13 +7,14 @@ import { ListContainer } from '@/app/components/ListDetail/ListContainer'
 import { LoadingSpinner } from '../LoadingSpinner'
 import { PostListItem } from './PostListItem'
 import { WritingTitlebar } from './WritingTitlebar'
+import { Post } from '@generated/prisma'
 
 export const WritingContext = React.createContext({
     filter: 'published',
     setFilter: (filter: string) => { },
 })
 
-export function PostsList() {
+export function PostsList({ posts }: { posts: Post[] }) {
     const [filter, setFilter] = React.useState('published')
     let [scrollContainerRef, setScrollContainerRef] = React.useState<React.RefObject<HTMLDivElement | null> | null>(null)
 
@@ -59,11 +61,11 @@ export function PostsList() {
                 <WritingTitlebar scrollContainerRef={scrollContainerRef} />
 
                 <div className="lg:space-y-1 lg:p-3">
-                    {/* {posts.map((post) => {
-                        const active = router.query?.slug === post.slug
+                    {posts.map((post) => {
+                        // const active = router.query?.slug === post.slug
 
-                        return <PostListItem key={post.id} post={post} active={active} />
-                    })} */}
+                        return <PostListItem key={post.id} post={post} active={false} />
+                    })}
                 </div>
             </ListContainer>
         </WritingContext.Provider>

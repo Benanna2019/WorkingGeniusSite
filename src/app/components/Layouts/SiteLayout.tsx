@@ -1,37 +1,29 @@
+'use client'
+
 import { SidebarProvider } from "../ui/sidebar";
 import { SidebarInset } from "../ui/sidebar";
 import { AppSidebar } from "../app-sidebar";
 import { TitleBar } from "../ListDetail/Titlebar";
 import { NavUser } from "../nav-user";
 import { User } from "@generated/prisma";
-import ClientAppShell from "./AppShell";
+import { LayoutProps } from "rwsdk/router";
 
-type SiteLayoutProps = {
-    user: any; // or define a proper serializable user type
-    children: React.ReactNode;
-};
-
-export function SiteLayout({ user, children }: SiteLayoutProps) {
+export function SiteLayout({ children, requestInfo }: LayoutProps) {
     return (
         <div className="relative flex h-full min-h-screen w-full">
-            <ClientAppShell>
-                <SidebarProvider
-                    style={
-                        {
-                            "--sidebar-width": "350px",
-                        } as React.CSSProperties
-                    }
-                >
-                    <AppSidebar>
-                        <NavUser user={user as User} />
-                    </AppSidebar>
-                    <SidebarInset>
-                        <TitleBar title="" scrollContainerRef={null} />
-                        <div className="flex flex-1">{children}</div>
-                    </SidebarInset>
-                </SidebarProvider>
-            </ClientAppShell>
+            <SidebarProvider
+                style={
+                    {
+                        "--sidebar-width": "350px",
+                    } as React.CSSProperties
+                }
+            >
+                <AppSidebar user={requestInfo?.ctx.user as User} />
+                <SidebarInset>
+                    {/* <TitleBar title="" scrollContainerRef={null} /> */}
+                    <div className="flex flex-1">{children}</div>
+                </SidebarInset>
+            </SidebarProvider>
         </div>
-
     )
 }

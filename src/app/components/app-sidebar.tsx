@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ArchiveX, Command, File, Inbox, Send, Trash2 } from "lucide-react"
+
 import { NavUser } from "@/app/components/nav-user"
 import { Label } from "@/app/components/ui/label"
 import {
@@ -18,7 +19,6 @@ import {
   useSidebar,
 } from "@/app/components/ui/sidebar"
 import { Switch } from "@/app/components/ui/switch"
-import { TitleBar } from "./ListDetail/Titlebar"
 import { User } from "@generated/prisma"
 
 // This is sample data
@@ -144,7 +144,7 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: User }) {
   // Note: I'm using state to show active item.
   // IRL you should use the url/router.
   const [activeItem, setActiveItem] = React.useState(data.navMain[0])
@@ -216,14 +216,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          {props.children}
+          <NavUser user={user} />
         </SidebarFooter>
       </Sidebar>
 
       {/* This is the second sidebar */}
       {/* We disable collapsible and let it fill remaining space */}
       <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-        <TitleBar title={activeItem?.title} scrollContainerRef={null} />
+        <SidebarHeader className="gap-3.5 border-b p-4">
+          <div className="flex w-full items-center justify-between">
+            <div className="text-foreground text-base font-medium">
+              {activeItem?.title}
+            </div>
+            <Label className="flex items-center gap-2 text-sm">
+              <span>Unreads</span>
+              <Switch className="shadow-none" />
+            </Label>
+          </div>
+          <SidebarInput placeholder="Type to search..." />
+        </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>

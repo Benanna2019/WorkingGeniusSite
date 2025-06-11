@@ -105,8 +105,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       rwsdk:
-        specifier: ^v0.1.0-alpha.3
-        version: 0.1.0-alpha.3(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.29)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.1)(terser@5.40.0))(webpack@5.99.9)(workerd@1.20250525.0)
+        specifier: 0.1.0-alpha.2
+        version: 0.1.0-alpha.2(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.29)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.1)(terser@5.40.0))(webpack@5.99.9)(workerd@1.20250525.0)
       slugify:
         specifier: ^1.6.6
         version: 1.6.6
@@ -2968,8 +2968,8 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  rwsdk@0.1.0-alpha.3:
-    resolution: {integrity: sha512-PzULisPTOiG+RENZf+H+lfOcHT2pXTuQr7vJQxNUZyoqi4Q2+pxmS9BtqSNixGlSG8uTevqJZjjnSbZbU5MZvA==}
+  rwsdk@0.1.0-alpha.2:
+    resolution: {integrity: sha512-myTTxPCJi/zYH2V/mO151b3aogc3rqvKzUqaC8Gs41AAJR+XFsZScv9pRfasxd1oPML8Mt97ui+c0g8EVRcR2A==}
     hasBin: true
     peerDependencies:
       vite: ^6.2.6
@@ -6563,7 +6563,7 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  rwsdk@0.1.0-alpha.3(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.29)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.1)(terser@5.40.0))(webpack@5.99.9)(workerd@1.20250525.0):
+  rwsdk@0.1.0-alpha.2(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.29)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.1)(terser@5.40.0))(webpack@5.99.9)(workerd@1.20250525.0):
     dependencies:
       '@cloudflare/vite-plugin': 0.0.0-1bae8618b(rollup@4.41.1)(vite@6.3.5(@types/node@22.15.29)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.1)(terser@5.40.0))(workerd@1.20250525.0)(wrangler@4.18.0(@cloudflare/workers-types@4.20250603.0))
       '@cloudflare/workers-types': 4.20250603.0

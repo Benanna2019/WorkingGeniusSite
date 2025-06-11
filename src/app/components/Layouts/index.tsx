@@ -1,3 +1,9 @@
+
+import * as React from 'react'
+
+import { Sidebar } from '@/app/components/Sidebar'
+import { LayoutProps } from 'rwsdk/router'
+
 interface Props {
     list: React.ReactElement | null
     detail: React.ReactElement | null
@@ -21,3 +27,12 @@ export function ListDetailView({ list, detail, hasDetail = false }: Props) {
     )
 }
 
+export function SiteLayout({ children, requestInfo }: LayoutProps) {
+    return (
+        <div className="relative flex h-full min-h-screen w-full">
+            <Sidebar />
+
+            <div className="flex flex-1">{children}</div>
+        </div>
+    )
+}

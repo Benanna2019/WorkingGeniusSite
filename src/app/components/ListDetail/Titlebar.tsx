@@ -12,7 +12,7 @@ interface Props {
     backButtonHref?: string
     magicTitle?: boolean
     titleRef?: React.RefObject<HTMLParagraphElement> | null
-    scrollContainerRef?: React.RefObject<HTMLDivElement> | null
+    scrollContainerRef: React.RefObject<HTMLDivElement> | null
     children?: React.ReactNode
     leadingAccessory?: React.ReactNode
     trailingAccessory?: React.ReactNode
@@ -97,8 +97,9 @@ export function TitleBar({
     }, [title, titleRef, scrollContainerRef])
 
     React.useEffect(() => {
-        const isDarkMode = window?.matchMedia &&
-            window?.matchMedia('(prefers-color-scheme: dark)').matches
+        const isDarkMode = "dark"
+        // window?.matchMedia &&
+        //     window?.matchMedia('(prefers-color-scheme: dark)').matches
         if (isDarkMode) setDarkMode(true)
     }, [])
 

@@ -14,7 +14,7 @@ import {
 import { NavigationLink } from './NavigationLink'
 
 export function SidebarNavigation() {
-    const pathname = window?.location?.pathname
+    const pathname = "/" //window?.location?.pathname
     const sections = [
         {
             label: null,

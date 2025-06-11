@@ -1,5 +1,5 @@
 import { defineApp, ErrorResponse } from "rwsdk/worker";
-import { route, render, prefix } from "rwsdk/router";
+import { route, render, prefix, layout } from "rwsdk/router";
 import { Document } from "@/app/Document";
 import { Home } from "@/app/pages/Home";
 import { setCommonHeaders } from "@/app/headers";
@@ -11,6 +11,10 @@ import { env } from "cloudflare:workers";
 export { SessionDurableObject } from "./session/durableObject";
 import { EditPost } from "@/app/pages/EditPost";
 import { auth } from "./auth";
+import { SiteLayout, ListDetailView } from "./app/components/Layouts";
+import { PostsList } from "./app/components/Writing/PostsList";
+import { dummyPosts } from "./app/data/dummyPosts";
+
 
 
 
@@ -29,8 +33,12 @@ export default defineApp([
     ctx.user = session?.user || null;
   },
   render(Document, [
-    route("/", Home),
-    route("/edit-post", EditPost),
+    layout(SiteLayout, [
+      route("/", Home),
+      route("/writing", () => (
+        <ListDetailView list={<PostsList posts={dummyPosts} />} detail={<div>Hello</div>} hasDetail={true} />
+      )),
+    ]),
     route("/auth/*", (ctx) => {
       return auth.handler(ctx.request);
     }),
