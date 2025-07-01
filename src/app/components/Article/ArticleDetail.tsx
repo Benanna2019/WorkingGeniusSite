@@ -1,6 +1,5 @@
 'use client'
 import * as React from 'react'
-//@ts-ignore
 import { useInView } from 'react-intersection-observer'
 import { Detail } from '../ListDetail/Detail'
 import { Tags } from '../Tags'

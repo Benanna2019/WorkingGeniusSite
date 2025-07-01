@@ -7,34 +7,43 @@ import { TitleBar } from '@/app/components/ListDetail/Titlebar'
 // import { useViewerQuery } from '~/graphql/types.generated'
 
 import SegmentedControl from '../SegmentedController'
-import { WritingContext } from './PostsList'
+import { WritingContext } from '../Providers'
 import { DialogDescription, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog'
+import { ClientInteractiveControls } from '../SegmentedController/ClientInteractiveControls'
+import { useViewerQuery } from '@/app/hooks/use-viewer-query'
+import { usePreserveSearchParams } from '@/app/lib/utils'
 // import { WritingSubscriptionForm } from './SubscriptionForm'
 
-export function WritingTitlebar({ scrollContainerRef }: { scrollContainerRef: React.RefObject<HTMLDivElement | null> | null }) {
-    // const { data } = useViewerQuery()
+interface Props {
+    scrollContainerRef: React.RefObject<HTMLDivElement>
+}
+
+export function WritingTitlebar({ scrollContainerRef }: Props) {
+    const user = useViewerQuery()
+    const { filter } = React.useContext(WritingContext)
+    const preservedNewPostHref = usePreserveSearchParams('/writing/new')
 
     function getAddButton() {
-        // if (data?.viewer?.isAdmin) {
-        //     return (
-        //         <a
-        //             className={buttonVariants({ variant: "ghost" })}
-        //             href="/writing/new"
-        //             data-cy="new-post-button"
-        //             aria-label="Add post"
-        //         >
-        //             <Plus size={16} />
-        //         </a>
-        //     )
-        // }
+        if (user?.role === "admin") {
+            return (
+                <a
+                    className={buttonVariants({ variant: "ghost" })}
+                    href={preservedNewPostHref}
+                    data-cy="new-post-button"
+                    aria-label="Add post"
+                >
+                    <Plus size={16} />
+                </a>
+            )
+        }
         return null
     }
 
     function getSubscribeButton() {
-        // if (data?.viewer?.isAdmin) return null
+        if (user?.role === "admin") return null
         return (
             <Dialog>
-                <DialogTrigger>
+                <DialogTrigger asChild>
                     <Button data-cy="open-subscribe-hn-dialog" size="sm">
                         <Radio size={16} />
                         <span>Subscribe</span>
@@ -54,29 +63,20 @@ export function WritingTitlebar({ scrollContainerRef }: { scrollContainerRef: Re
     function trailingAccessory() {
         return (
             <div className="flex space-x-2">
-                {getSubscribeButton()}
+                {/* {getSubscribeButton()} */}
                 {getAddButton()}
             </div>
         )
     }
 
     function getChildren() {
-        // const { data } = useViewerQuery()
-        const { setFilter, filter } = React.useContext(WritingContext)
-        // if (data?.viewer?.isAdmin) {
-        return (
-            <div className="pt-2 pb-1">
-                <SegmentedControl
-                    onSetActiveItem={setFilter}
-                    active={filter}
-                    items={[
-                        { id: 'published', label: 'Published' },
-                        { id: 'draft', label: 'Drafts' },
-                    ]}
-                />
-            </div>
-        )
-        // }
+        if (user?.role === "admin") {
+            return (
+                <div className="pt-2 pb-1">
+                    <ClientInteractiveControls />
+                </div>
+            )
+        }
         return null
     }
 
@@ -84,7 +84,7 @@ export function WritingTitlebar({ scrollContainerRef }: { scrollContainerRef: Re
         <TitleBar
             trailingAccessory={trailingAccessory()}
             title="Writing"
-            scrollContainerRef={scrollContainerRef as React.RefObject<HTMLDivElement> | null}
+            scrollContainerRef={scrollContainerRef}
         >
             {getChildren()}
         </TitleBar>

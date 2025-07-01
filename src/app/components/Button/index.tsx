@@ -1,12 +1,11 @@
 /* eslint-disable react/display-name */
 'use client'
-import Link from 'next/link'
 import * as React from 'react'
-import { experimental_useFormStatus as useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
 
 interface BaseButtonProps {
   [key: string]: unknown
-  size: string
+  size?: string
   disabled?: boolean
   children?: React.ReactNode
 }
@@ -28,9 +27,9 @@ function BaseButton({
 }) {
   if (href) {
     return (
-      <Link href={href}>
+      <a href={href}>
         <div {...rest} />
-      </Link>
+      </a>
     )
   }
 
@@ -142,11 +141,10 @@ export const GhostButton = React.forwardRef((props: ButtonProps, ref) => {
 })
 
 export const CommentButton = React.forwardRef((props: ButtonProps, ref) => {
-  const classes = `${
-    props.disabled
-      ? 'text-gray-500 border-gray-400 bg-black'
-      : 'border-blue-600 bg-blue-500 text-black hover:bg-blue-600'
-  } shadow-xs bg-white border border-opacity-30 dark:bg-opacity-10 hover:border-opacity-50 hover:shadow-sm w-8 rounded`
+  const classes = `${props.disabled
+    ? 'text-gray-500 border-gray-400 bg-black'
+    : 'border-blue-600 bg-blue-500 text-black hover:bg-blue-600'
+    } shadow-xs bg-white border border-opacity-30 dark:bg-opacity-10 hover:border-opacity-50 hover:shadow-sm w-8 rounded`
   const size = composer.getSize(props.size)
   const opacity = composer.getOpacity(props.disabled)
   const radius = composer.getRadius(props.size)
@@ -165,11 +163,10 @@ export const CommentButton = React.forwardRef((props: ButtonProps, ref) => {
 
 export const CommentInputButton = React.forwardRef(
   (props: ButtonProps, ref) => {
-    const classes = `${
-      props.disabled
-        ? 'text-gray-500 border-gray-400 bg-black'
-        : 'border-blue-600 bg-blue-500 text-black hover:bg-blue-600'
-    } shadow-xs bg-white border border-opacity-30 dark:bg-opacity-10 hover:border-opacity-50 hover:shadow-sm w-8 rounded`
+    const classes = `${props.disabled
+      ? 'text-gray-500 border-gray-400 bg-black'
+      : 'border-blue-600 bg-blue-500 text-black hover:bg-blue-600'
+      } shadow-xs bg-white border border-opacity-30 dark:bg-opacity-10 hover:border-opacity-50 hover:shadow-sm w-8 rounded`
     const size = composer.getSize(props.size)
     const opacity = composer.getOpacity(props.disabled)
     const radius = composer.getRadius(props.size)

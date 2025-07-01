@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format, getDate } from "date-fns";
+import { useEffect, useState } from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -76,4 +77,73 @@ export function validUrl(string: string) {
   } catch (err) {
     return false;
   }
+}
+
+/**
+ * Hook to preserve search parameters without causing hydration issues
+ * @param href - The base href to navigate to
+ * @param preserveParams - Whether to preserve current search params (default: true)
+ * @returns The href with preserved search parameters
+ */
+export function usePreserveSearchParams(
+  href: string,
+  preserveParams: boolean = true
+): string {
+  const [preservedHref, setPreservedHref] = useState(href);
+
+  useEffect(() => {
+    if (!preserveParams) {
+      setPreservedHref(href);
+      return;
+    }
+
+    try {
+      const currentSearchParams = window.location.search;
+      if (!currentSearchParams) {
+        setPreservedHref(href);
+        return;
+      }
+
+      // If href already has search params, we need to merge them
+      const [basePath, existingParams] = href.split("?");
+      const currentParams = new URLSearchParams(currentSearchParams);
+      const existingParamsObj = existingParams
+        ? new URLSearchParams(existingParams)
+        : new URLSearchParams();
+
+      // Merge params (existing params take precedence)
+      for (const [key, value] of currentParams.entries()) {
+        if (!existingParamsObj.has(key)) {
+          existingParamsObj.set(key, value);
+        }
+      }
+
+      const finalParams = existingParamsObj.toString();
+      setPreservedHref(finalParams ? `${basePath}?${finalParams}` : basePath);
+    } catch (error) {
+      // Fallback to base href if there's any error
+      setPreservedHref(href);
+    }
+  }, [href, preserveParams]);
+
+  return preservedHref;
+}
+
+/**
+ * Preserves current URL search parameters when navigating to a new href
+ * @param href - The base href to navigate to
+ * @param preserveParams - Whether to preserve current search params (default: true)
+ * @returns The href with preserved search parameters
+ *
+ * @deprecated Use usePreserveSearchParams hook instead to avoid hydration issues
+ */
+export function preserveSearchParams(
+  href: string,
+  preserveParams: boolean = true
+): string {
+  if (!preserveParams) return href;
+
+  // Always return base href to prevent hydration mismatches
+  // Components should use usePreserveSearchParams hook instead
+  return href;
 }

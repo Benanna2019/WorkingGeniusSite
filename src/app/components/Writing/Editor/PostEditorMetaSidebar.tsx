@@ -1,8 +1,10 @@
+"use client"
 import * as React from 'react'
 import { X } from 'lucide-react'
 
 import { Button } from '@/app/components/ui/button'
-import { Input, Textarea } from '@/app/components/Input'
+import { Input } from '@/app/components/ui/input'
+import { Textarea } from '@/app/components/ui/textarea'
 import { TitleBar } from '@/app/components/ListDetail/Titlebar'
 import { LoadingSpinner } from '@/app/components/LoadingSpinner'
 
@@ -12,10 +14,16 @@ import { LoadingSpinner } from '@/app/components/LoadingSpinner'
 //     useGetPostsQuery,
 // } from '~/graphql/types.generated'
 
-import { DraftState, PostEditorContext } from './PostEditor'
+import { DraftState, PostEditorContext, usePostEditorContext } from '@/app/components/Providers'
 
 export function PostEditorMetaSidebar() {
     const context = React.useContext(PostEditorContext)
+
+    // Guard against undefined context or unavailable features
+    if (!context || !context.isAvailable) {
+        return null
+    }
+
     const {
         draftState,
         existingPost,
@@ -23,6 +31,7 @@ export function PostEditorMetaSidebar() {
         sidebarIsOpen,
         setSidebarIsOpen,
     } = context
+
     const scrollContainerRef = React.useRef<HTMLDivElement>(null as any)
 
     // const [editPost, { loading: editingPost }] = useEditPostMutation()
@@ -98,7 +107,6 @@ export function PostEditorMetaSidebar() {
                             value={draftState.excerpt}
                             placeholder="Excerpt"
                             rows={8}
-                            maxRows={8}
                             onChange={handleExcerptChange}
                         />
                     </div>
@@ -108,10 +116,8 @@ export function PostEditorMetaSidebar() {
                     {existingPost?.id && !existingPost?.publishedAt && (
                         <Button
                             style={{ width: '100%' }}
-                        // disabled={editingPost}
-                        // onClick={handlePublish}
+
                         >
-                            {/* {editingPost ? <LoadingSpinner /> : 'Publish'} */}
                             Publish
                         </Button>
                     )}

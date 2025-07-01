@@ -1,6 +1,6 @@
-// learned from https://samuelkraft.com/blog/segmented-control-framer-motion
-import { AnimateSharedLayout, motion } from 'framer-motion'
-import { useState } from 'react'
+"use client"
+import { LayoutGroup, motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
 type Item = {
     id: string
@@ -10,7 +10,7 @@ type Item = {
 type SegmentedControlProps = {
     onSetActiveItem: Function
     items: Array<Item>
-    active: String
+    active: string
 }
 
 const SegmentedControl = ({
@@ -19,46 +19,60 @@ const SegmentedControl = ({
     active,
 }: SegmentedControlProps): React.ReactElement => {
     const [activeItem, setActiveitem] = useState(active)
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     function onChange(i: number) {
         setActiveitem(items[i].id)
         onSetActiveItem(items[i].id)
     }
 
+    // Don't render on server to avoid hydration mismatch
+    if (!isClient) {
+        return <div className="h-8 w-full" /> // Placeholder with same height
+    }
+
     return (
-        <AnimateSharedLayout>
+        <div>
+            {/* <LayoutGroup> */}
             <ol
-                className={`flex list-none rounded-md bg-black bg-opacity-5 p-1 dark:bg-white dark:bg-opacity-5`}
+                className="flex list-none rounded-md bg-black/5 p-1 dark:bg-white/5"
             >
                 {items.map((item, i) => {
                     const isActive = items[i].id === activeItem
                     return (
-                        <motion.li
+                        // <motion.li
+                        <li
                             className="relative flex-1 leading-none"
-                            whileTap={isActive ? { scale: 0.95 } : { opacity: 0.6 }}
+                            // whileTap={isActive ? { scale: 0.95 } : { opacity: 0.6 }}
                             key={item.id}
                         >
                             <button
                                 onClick={() => onChange(i)}
                                 type="button"
                                 className={`relative w-full cursor-pointer bg-transparent px-4 py-1.5 text-xs font-semibold leading-none ${isActive
-                                    ? `text-black text-opacity-100 dark:text-white`
-                                    : `text-black text-opacity-60 hover:text-opacity-100 dark:text-white`
+                                    ? `text-black dark:text-white`
+                                    : `text-black/60 hover:text-black dark:text-white`
                                     }`}
                             >
                                 {isActive && (
-                                    <motion.div
-                                        layoutId="SegmentedControlActive"
+                                    // <motion.div
+                                    <div
+                                        // layoutId="SegmentedControlActive"
                                         className="z-1 absolute top-0 bottom-0 left-0 right-0 rounded bg-white shadow-sm content-none dark:bg-gray-700"
                                     />
                                 )}
                                 <span className="z-2 relative">{item.label}</span>
                             </button>
-                        </motion.li>
+                        </li>
                     )
                 })}
             </ol>
-        </AnimateSharedLayout>
+            {/* </LayoutGroup> */}
+        </div>
     )
 }
 

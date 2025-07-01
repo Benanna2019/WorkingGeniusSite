@@ -2,12 +2,10 @@
 
 import * as React from 'react'
 import { Switch } from '@/app/components/Switch'
-
-import { PostEditorContext } from './PostEditor'
+import { PostEditorContext } from '@/app/components/Providers'
 
 export function PreviewSwitch() {
-    const context = React.useContext(PostEditorContext)
-    const { isPreviewing, setIsPreviewing } = context
+    const { isPreviewing, setIsPreviewing } = React.useContext(PostEditorContext)
 
     return (
         <Switch

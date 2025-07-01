@@ -1,72 +1,37 @@
+"use client"
 import * as React from 'react'
 
-import { Dropzone } from '@/app/components/Dropzone'
-import { Textarea } from '@/app/components/Input'
-import { Detail } from '@/app/components/ListDetail/Detail'
-
-import { PostEditorContext } from './PostEditor'
+import { Input } from '@/app/components/ui/input'
+import { Textarea } from '@/app/components/ui/textarea'
+import { PostEditorContext } from '@/app/components/Providers'
 
 export function PostEditorComposer() {
-    const context = React.useContext(PostEditorContext)
-    const { draftState, setDraftState } = context
-    const uploadingImagePlaceholder = '![](Uploading...)'
+    const { draftState, setDraftState } = React.useContext(PostEditorContext)
 
-    function handleTitleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        setDraftState((draft) => ({ ...draft, title: e.target.value }))
+    function updateTitle(title: string) {
+        setDraftState((draft) => ({ ...draft, title }))
     }
 
-    function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        setDraftState((draft) => ({ ...draft, text: e.target.value }))
-    }
-
-    function onUploadComplete(url?: string) {
-        if (!url) return
-        const image = `![](${url})`
-        setDraftState((draft) => ({
-            ...draft,
-            text: draft.text.replace(uploadingImagePlaceholder, image),
-        }))
-    }
-
-    function onUploadFailed() {
-        setDraftState((draft) => ({
-            ...draft,
-            text: draft.text.replace(uploadingImagePlaceholder, ''),
-        }))
-    }
-
-    function onUploadStarted() {
-        setDraftState((draft) => ({
-            ...draft,
-            text: (draft.text += uploadingImagePlaceholder),
-        }))
+    function updateText(text: string) {
+        setDraftState((draft) => ({ ...draft, text }))
     }
 
     return (
-        <Dropzone
-            onUploadStarted={onUploadStarted}
-            onUploadComplete={onUploadComplete}
-            onUploadFailed={onUploadFailed}
-        >
-            <Detail.ContentContainer>
-                <Detail.Header>
-                    <Textarea
-                        rows={1}
-                        value={draftState.title}
-                        onChange={handleTitleChange}
-                        placeholder={'Post title'}
-                        className="block w-full p-0 text-2xl font-bold border-none composer text-primary focus:border-0 focus:outline-none focus:ring-0 dark:bg-black md:text-3xl"
-                    />
-                    <Textarea
-                        rows={20}
-                        maxRows={2000}
-                        value={draftState.text}
-                        onChange={handleTextChange}
-                        placeholder={'Write a post...'}
-                        className="block w-full p-0 pt-5 text-lg font-normal prose border-none composer text-primary focus:border-0 focus:outline-none focus:ring-0 dark:bg-black"
-                    />
-                </Detail.Header>
-            </Detail.ContentContainer>
-        </Dropzone>
+        <div className="mx-auto w-full flex max-w-3xl flex-col space-y-8 px-4 py-24">
+            <Input
+                type='text'
+                value={draftState.title}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateTitle(e.target.value)}
+                placeholder="Post title..."
+                className="block w-full border-none p-0 md:text-2xl font-bold placeholder-gray-300 focus:border-none focus:outline-none focus:ring-0 dark:bg-transparent dark:text-white placeholder:text-2xl"
+            />
+            <Textarea
+                rows={25}
+                value={draftState.text}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateText(e.target.value)}
+                placeholder="Write a post..."
+                className="block w-full resize-none border-none p-0 text-lg placeholder-gray-300 focus:border-none focus:outline-none focus:ring-0 dark:bg-transparent dark:text-white"
+            />
+        </div>
     )
 }

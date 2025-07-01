@@ -13,10 +13,10 @@ export const PostListItem = React.memo<Props>(({ post, active }) => {
     const publishedAt = timestampToCleanTime({ timestamp: post.publishedAt })
     return (
         <ListItem
-            key={post.id}
-            href="/writing/[slug]"
+            key={post.slug}
+            href={`/writing/${post.slug}`}
             title={post.title}
-            description={null}
+            description={post.description}
             byline={post.publishedAt ? publishedAt.formatted : 'Draft'}
             active={active}
         />

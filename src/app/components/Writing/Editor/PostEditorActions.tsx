@@ -1,3 +1,5 @@
+'use client'
+
 // import { useRouter } from 'next/router'
 import * as React from 'react'
 import { Sidebar } from 'lucide-react'
@@ -12,12 +14,11 @@ import { Switch } from '@/app/components/Switch'
 //     useEditPostMutation,
 // } from '@/app/graphql/types.generated'
 
-import { PostEditorContext } from './PostEditor'
+import { PostEditorContext } from '@/app/components/Providers'
 import { PostEditorAutoSave } from './PostEditorAutoSave'
 
 export function PostEditorActions() {
     // const router = useRouter()
-    const context = React.useContext(PostEditorContext)
     const {
         draftState,
         existingPost,
@@ -25,7 +26,7 @@ export function PostEditorActions() {
         setSidebarIsOpen,
         isPreviewing,
         setIsPreviewing,
-    } = context
+    } = React.useContext(PostEditorContext)
 
     // const [addPost, { loading: creatingPost }] = useAddPostMutation({
     //     onCompleted({ addPost }) {

@@ -1,6 +1,8 @@
 import * as React from 'react'
 
 import { Button, buttonVariants } from '@/app/components/ui/button'
+import { MoreHorizontal, Trash2, Edit } from 'lucide-react'
+import { usePreserveSearchParams } from '@/app/lib/utils'
 // import { ReactionButton } from '@/app/components/Button/ReactionButton'
 // import { GET_POST } from '~/graphql/queries/posts'
 // import {
@@ -56,23 +58,15 @@ import { Button, buttonVariants } from '@/app/components/ui/button'
 //     )
 // }
 
-function getEditButton(post: any) {
-    // const { data } = useViewerQuery()
-
-    // if (!data?.viewer?.isAdmin) return null
-
-    return (
-        <a className={buttonVariants({ variant: 'link' })} href={`/writing/${post.slug}/edit`}>
-            Edit
-        </a>
-    )
-}
-
 export function PostActions({ post }: { post: any }) {
+    const preservedEditHref = usePreserveSearchParams(`/writing/${post.slug}/edit`)
+
     return (
         <div className="flex items-center space-x-2">
             {/* {getReactionButton(post)} */}
-            {getEditButton(post)}
+            <a className={buttonVariants({ variant: 'link' })} href={preservedEditHref}>
+                <Edit size={16} />
+            </a>
         </div>
     )
 }

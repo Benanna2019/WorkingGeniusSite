@@ -7,67 +7,41 @@ import { ListContainer } from '@/app/components/ListDetail/ListContainer'
 import { LoadingSpinner } from '../LoadingSpinner'
 import { PostListItem } from './PostListItem'
 import { WritingTitlebar } from './WritingTitlebar'
-import { Post } from '@generated/prisma'
+import { useQuery } from 'convex/react';
+import { api } from '../../../../convex/_generated/api';
+import { WritingContext } from '../Providers';
+import { useQueryState } from 'nuqs';
 
-export const WritingContext = React.createContext({
-    filter: 'published',
-    setFilter: (filter: string) => { },
-})
+export function PostsList() {
+    const { filter } = React.useContext(WritingContext)
+    // console.log('filter', filter)
+    const [scrollContainerRef, setScrollContainerRef] = React.useState<React.RefObject<HTMLDivElement> | null>(null)
 
-export function PostsList({ posts }: { posts: Post[] }) {
-    const [filter, setFilter] = React.useState('published')
-    let [scrollContainerRef, setScrollContainerRef] = React.useState<React.RefObject<HTMLDivElement | null> | null>(null)
+    const posts = useQuery(api.posts.getPosts, { filter: { status: filter as "published" | "draft" } })
 
-    const variables =
-        filter === 'published'
-            ? { filter: { published: true } }
-            : { filter: { published: false } }
-
-    // const { data, error, loading, refetch } = useGetPostsQuery({ variables })
-
-    // React.useEffect(() => {
-    //     refetch()
-    // }, [filter])
-
-    // if (error) {
-    //     return (
-    //         <ListContainer onRef={setScrollContainerRef}>
-    //             <div />
-    //         </ListContainer>
-    //     )
-    // }
-
-    // if (loading && !data?.posts) {
-    //     return (
-    //         <ListContainer onRef={setScrollContainerRef}>
-    //             <WritingTitlebar scrollContainerRef={scrollContainerRef} />
-    //             <div className="flex flex-1 items-center justify-center">
-    //                 <LoadingSpinner />
-    //             </div>
-    //         </ListContainer>
-    //     )
-    // }
-
-    // const { posts } = data
-
-    const defaultContextValue = {
-        filter,
-        setFilter,
+    // Handle loading state for posts query
+    if (posts === undefined) {
+        return (
+            <ListContainer data-cy="posts-list" onRef={(ref) => setScrollContainerRef(ref as React.RefObject<HTMLDivElement>)}>
+                {scrollContainerRef && <WritingTitlebar scrollContainerRef={scrollContainerRef} />}
+                <div className="lg:space-y-1 lg:p-3">
+                    <LoadingSpinner />
+                </div>
+            </ListContainer>
+        )
     }
 
     return (
-        <WritingContext.Provider value={defaultContextValue}>
-            <ListContainer data-cy="posts-list" onRef={setScrollContainerRef}>
-                <WritingTitlebar scrollContainerRef={scrollContainerRef} />
+        <ListContainer data-cy="posts-list" onRef={(ref) => setScrollContainerRef(ref as React.RefObject<HTMLDivElement>)}>
+            {scrollContainerRef && <WritingTitlebar scrollContainerRef={scrollContainerRef} />}
 
-                <div className="lg:space-y-1 lg:p-3">
-                    {posts.map((post) => {
-                        // const active = router.query?.slug === post.slug
+            <div key={filter} className="lg:space-y-1 lg:p-3">
+                {posts?.map((post) => {
+                    // const active = window.location.pathname === `/writing/${post.slug}`
 
-                        return <PostListItem key={post.id} post={post} active={false} />
-                    })}
-                </div>
-            </ListContainer>
-        </WritingContext.Provider>
+                    return <PostListItem key={post.slug} post={post} active={false} />
+                })}
+            </div>
+        </ListContainer>
     )
 }

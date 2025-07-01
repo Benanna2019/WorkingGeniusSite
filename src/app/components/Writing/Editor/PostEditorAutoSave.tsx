@@ -1,10 +1,11 @@
+"use client"
 import * as React from 'react'
 
 import { LoadingSpinner } from '@/app/components/LoadingSpinner'
 // import { useEditPostMutation } from '~/graphql/types.generated'
 // import useInterval from '~/hooks/useInterval'
 
-import { PostEditorContext } from './PostEditor'
+import { PostEditorContext } from '@/app/components/Providers'
 import useInterval from '@/app/hooks/use-interval'
 
 export function PostEditorAutoSave() {

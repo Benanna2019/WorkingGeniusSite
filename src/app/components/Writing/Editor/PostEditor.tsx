@@ -11,82 +11,39 @@ import { PostEditorComposer } from './PostEditorComposer'
 import { PostEditorMetaSidebar } from './PostEditorMetaSidebar'
 import { PostEditorPreview } from './PostEditorPreview'
 import { PreviewSwitch } from './PreviewSwitch'
-
-export type DraftState = {
-    title: string;
-    text: string;
-    slug: string;
-    excerpt: string;
-}
-
-type PostEditorContextType = {
-    draftState: DraftState;
-    setDraftState: React.Dispatch<React.SetStateAction<DraftState>>;
-    existingPost: any;
-    sidebarIsOpen: boolean;
-    setSidebarIsOpen: (isOpen: boolean) => void;
-    isPreviewing: boolean;
-    setIsPreviewing: (isPreviewing: boolean) => void;
-}
-
-export const PostEditorContext = React.createContext<PostEditorContextType>({
-    draftState: {
-        title: '',
-        text: '',
-        slug: '',
-        excerpt: '',
-    },
-    setDraftState: () => { },
-    existingPost: null,
-    sidebarIsOpen: false,
-    setSidebarIsOpen: (isOpen: boolean) => { },
-    isPreviewing: false,
-    setIsPreviewing: (isPreviewing: boolean) => { },
-})
+import { useGetPostQuery } from '@/app/hooks/use-get-post-query'
+import { PostEditorContext } from '@/app/components/Providers'
 
 export function PostEditor({ slug: propsSlug = '' }) {
     const scrollContainerRef = React.useRef<HTMLDivElement>(null as any)
-    // const { data } = useGetPostQuery({ variables: { slug: propsSlug } })
-
-    // const defaultDraftState = {
-    //     title: data?.post?.title || '',
-    //     text: data?.post?.text || '',
-    //     slug: data?.post?.slug || '',
-    //     excerpt: data?.post?.excerpt || '',
-    // }
-
-    const defaultDraftState = {
-        title: '',
-        text: '',
-        slug: '',
-        excerpt: '',
-    }
-
-    const [draftState, setDraftState] = React.useState(defaultDraftState)
-    const [isPreviewing, setIsPreviewing] = React.useState(false)
-
-    // const existingPost = data?.post
-    const existingPost = null
-    const [sidebarIsOpen, setSidebarIsOpen] = React.useState(false)
-
-    React.useEffect(() => {
-        // if navigating between drafts, reset the state each time with the correct
-        // post data
-        setDraftState(defaultDraftState)
-    }, [propsSlug])
-
-    const defaultContextValue = {
-        existingPost,
-        draftState,
+    const post = useGetPostQuery({ slug: propsSlug })
+    const {
         setDraftState,
-        sidebarIsOpen,
-        setSidebarIsOpen,
         isPreviewing,
-        setIsPreviewing,
-    }
+    } = React.useContext(PostEditorContext)
+
+    // Update draft state when post data changes or slug changes
+    React.useEffect(() => {
+        if (post) {
+            setDraftState({
+                title: post.title || '',
+                text: post.text || '',
+                slug: post.slug || '',
+                excerpt: post.excerpt || '',
+            })
+        } else if (propsSlug === '') {
+            // Reset for new post
+            setDraftState({
+                title: '',
+                text: '',
+                slug: '',
+                excerpt: '',
+            })
+        }
+    }, [post, propsSlug, setDraftState])
 
     return (
-        <PostEditorContext.Provider value={defaultContextValue}>
+        <>
             <Detail.Container ref={scrollContainerRef}>
                 <TitleBar
                     backButton
@@ -101,6 +58,6 @@ export function PostEditor({ slug: propsSlug = '' }) {
                 {isPreviewing ? <PostEditorPreview /> : <PostEditorComposer />}
             </Detail.Container>
             <PostEditorMetaSidebar />
-        </PostEditorContext.Provider>
+        </>
     )
 }

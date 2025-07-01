@@ -4,6 +4,7 @@ import * as React from 'react'
 import { ArrowLeft, Menu, X } from 'lucide-react'
 import { GlobalNavigationContext } from '@/app/components/Providers'
 import { buttonVariants } from '../ui/button'
+import { usePreserveSearchParams } from '@/app/lib/utils'
 
 interface Props {
     title: string
@@ -40,6 +41,8 @@ export function TitleBar({
         top: 0,
         bottom: 0,
     })
+
+    const preservedBackButtonHref = usePreserveSearchParams(backButtonHref || '#')
 
     const initialTitleOffsetsRef = React.useRef(initialTitleOffsets)
     const setInitialTitleOffsets = (data: { top: number, bottom: number }) => {
@@ -135,8 +138,7 @@ export function TitleBar({
 
                         {backButton && (
                             <a
-
-                                href={backButtonHref}
+                                href={preservedBackButtonHref}
                                 className={buttonVariants({ variant: 'link' })}
                             // className="flex items-center justify-center p-2 rounded-md text-primary hover:bg-gray-200 dark:hover:bg-gray-800 lg:hidden"
                             >

@@ -6,51 +6,71 @@ import { setCommonHeaders } from "@/app/headers";
 import { userRoutes } from "@/app/pages/user/routes";
 import { sessions, setupSessionStore } from "./session/store";
 import { Session } from "./session/durableObject";
-import { type User, db, setupDb } from "@/db";
 import { env } from "cloudflare:workers";
 export { SessionDurableObject } from "./session/durableObject";
 import { EditPost } from "@/app/pages/EditPost";
-import { auth } from "./auth";
 import { SiteLayout, ListDetailView } from "./app/components/Layouts";
 import { PostsList } from "./app/components/Writing/PostsList";
-import { dummyPosts } from "./app/data/dummyPosts";
-
-
+import { PostEditor } from "./app/components/Writing/Editor/PostEditor";
+import { PostDetail } from "./app/components/Writing/PostDetail";
 
 
 export type AppContext = {
-  user: typeof auth.$Infer.Session.user | null;
-  session: typeof auth.$Infer.Session.session | null;
+  user: any;
+  session: any;
 };
 
 export default defineApp([
   setCommonHeaders(),
   async ({ ctx, request }) => {
-    await setupDb(env);
     setupSessionStore(env);
-    const session = await auth.api.getSession({ headers: request.headers });
 
-    ctx.user = session?.user || null;
+    ctx.user = null;
+    ctx.session = null;
   },
   render(Document, [
     layout(SiteLayout, [
       route("/", Home),
       route("/writing", () => (
-        <ListDetailView list={<PostsList posts={dummyPosts} />} detail={<div>Hello</div>} hasDetail={true} />
+        <ListDetailView key="writing-view" list={<PostsList />} detail={null} hasDetail={true} />
       )),
-    ]),
-    route("/auth/*", (ctx) => {
-      return auth.handler(ctx.request);
-    }),
-    route("/logout", async ({ request }) => {
-      // Clear the session
-      await auth.api.signOut({ headers: request.headers });
+      route("/writing/new", () => (
+        <ListDetailView key="writing-new-view" list={<PostsList />} detail={<PostEditor />} hasDetail={true} />
+      )),
+      route("/writing/:slug", ({ params }) => {
+        return (
+          <ListDetailView key="writing-view" list={<PostsList />} detail={<PostDetail slug={params.slug} />} hasDetail={true} />
+        )
+      }),
 
-      // Redirect to home page
-      return new Response(null, {
-        status: 302,
+    ]),
+    route("/api/images/upload/", async ({ request }) => {
+      const formData = await request.formData();
+      const file = formData.get("file") as File;
+
+      // Stream the file directly to R2
+      const r2ObjectKey = `/storage/${file.name}`;
+      await env.R2.put(r2ObjectKey, file.stream(), {
+        httpMetadata: {
+          contentType: file.type,
+        },
+      });
+
+      return new Response(JSON.stringify({ key: r2ObjectKey }), {
+        status: 200,
         headers: {
-          Location: "/",
+          "Content-Type": "application/json",
+        },
+      });
+    }),
+    route("/api/images/download/*", async ({ request, params }) => {
+      const object = await env.R2.get("/storage/" + params.$0);
+      if (object === null) {
+        return new Response("Object Not Found", { status: 404 });
+      }
+      return new Response(object.body, {
+        headers: {
+          "Content-Type": object.httpMetadata?.contentType as string,
         },
       });
     }),

@@ -1,3 +1,4 @@
+"use client"
 import * as React from 'react'
 
 import { Comments } from '@/app/components/Comment'
@@ -8,21 +9,40 @@ import { MarkdownRenderer } from '@/app/components/MarkdownRenderer'
 import { timestampToCleanTime } from '@/app/lib/utils'
 
 import { PostActions } from './PostActions'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import { LoadingSpinner } from '../LoadingSpinner'
 
 export function PostDetail({ slug }: { slug: string }) {
     const scrollContainerRef = React.useRef<HTMLDivElement>(null as any)
     const titleRef = React.useRef<HTMLParagraphElement>(null as any)
-    // const { data, error, loading } = useGetPostQuery({ variables: { slug } })
+    const post = useQuery(api.posts.getPostBySlug, { slug })
 
-    // if (loading) {
-    //     return <Detail.Loading />
-    // }
+    // Handle loading state for post query
+    if (post === undefined) {
+        return (
+            <Detail.Container ref={scrollContainerRef}>
+                <TitleBar
+                    backButton={true}
+                    globalMenu={false}
+                    backButtonHref="/writing"
+                    magicTitle
+                    title="Loading..."
+                    titleRef={titleRef}
+                    scrollContainerRef={scrollContainerRef}
+                />
+                <div className="p-8">
+                    <LoadingSpinner />
+                </div>
+            </Detail.Container>
+        )
+    }
 
-    // if (!data?.post || error) {
-    //     return <Detail.Null />
-    // }
-    // const { post } = data
-    // const publishedAt = timestampToCleanTime({ timestamp: post.publishedAt })
+    if (!post) {
+        return null
+    }
+
+    const publishedAt = timestampToCleanTime({ timestamp: post.publishedAt })
     return (
         <>
             <Detail.Container data-cy="post-detail" ref={scrollContainerRef}>
@@ -31,25 +51,26 @@ export function PostDetail({ slug }: { slug: string }) {
                     globalMenu={false}
                     backButtonHref={'/writing'}
                     magicTitle
-                    // title={post.title}
-                    title="Post Title"
+                    title={post.title}
                     titleRef={titleRef}
                     scrollContainerRef={scrollContainerRef}
-                // trailingAccessory={<PostActions post={post} />}
+                    trailingAccessory={<PostActions post={post} />}
                 />
 
                 <Detail.ContentContainer>
                     <Detail.Header>
-                        {/* <Detail.Title ref={titleRef}>{post.title}</Detail.Title>
+                        <Detail.Title ref={titleRef}>{post.title}</Detail.Title>
                         <span
                             title={publishedAt.raw}
                             className="text-tertiary inline-block leading-snug"
                         >
                             {publishedAt.formatted}
-                        </span> */}
+                        </span>
                     </Detail.Header>
 
-                    {/* <MarkdownRenderer children={post.text} className="prose mt-8" /> */}
+                    <div className="prose mt-8">
+                        <MarkdownRenderer markdown={post.text} />
+                    </div>
 
                     {/* bottom padding to give space between post content and comments */}
                     <div className="py-6" />

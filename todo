@@ -1,29 +1,45 @@
-[] - make sidebar and second sidebar dynamic
-[] - get passkey auth working as expected
-[] - evaluate whether I should actually use clerk or not
-    - Benefits of clerk (user management/roles/etc)
-    - clerk would be an easier setup unfortunately
+DATABASE
+[x] - use convexdb for auth/database
+[] - update convex to have organizations
+[] - invite links for organizations
 
-[] - add remaining schemas to prisma schema
-[] - seed database with some posts
-[] - for secondary sidebar, use replace the ListItem component with the shad implementation, maybe
+
+FETCHING
+[] - look at setting up react query and convex 
+[] - use the useSuspenseQuery
+[] - see if I need to add the Suspense setup and hydration stuff in providers
 
 REALTIME
 
 [] - add profiles
-[] - add ability to upload music and store in s3
+[] - add ability to upload music and store in r2
+[] - presence with convex
+[] - presence with convex attached to a durable object
+[] - sync audio with durable object
+[] - sync audio with convex
+
+[] - working genius profiles and team maps with realtime
 
 WRITING
 
+[] - probably need to use the auth jwt to get user info off of context
+[] - then use that to decide if the route should even filter based off of post status
+[] - if user is not admin, then query params do not matter
+[] - default search should be published on writing and writing/slug routes
+[] - return a div with a key of the filter for flight data merging 
 [] - making sure that writing posts, as markdown, can store images and get them back to preview in the ui
+[x] - add markdown-to-jsx
+[] - store images in r2 using endpoint in routes using the drag and drop lib
 
 STYLES
 
-[] - add brianlovin styles to app styles
+[x] - add brianlovin styles to app styles
 
 REARCHITECT
 
 [] - setup clean architecture
+[] - refer to Tylers talk
+[] - create a git branch and have claude have a go
 
 EMAIL SUBSCRIPTION
 

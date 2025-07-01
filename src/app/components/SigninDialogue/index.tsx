@@ -2,7 +2,7 @@ import { SignInDialog } from './SignInDialogComp'
 import { RequestInfo } from 'rwsdk/worker'
 
 //  need to use the ctx info and something with prisma for signing out
-export default async function SignInDialogSession({
+export default function SignInDialogSession({
   refId,
   ctx,
 }: {
