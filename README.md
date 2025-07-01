@@ -61,3 +61,4 @@ For authentication setup and configuration, including optional bot protection, s
 - [RedwoodSDK Documentation](https://docs.rwsdk.com/)
 - [Cloudflare Workers Secrets](https://developers.cloudflare.com/workers/runtime-apis/secrets/)
 # WorkingGeniusSite
+# rwsdk-fpmastery
